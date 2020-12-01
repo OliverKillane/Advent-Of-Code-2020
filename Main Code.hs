@@ -3,12 +3,10 @@
 -- From a list of integers, get the product of the two that sum to 2020
 part1 :: [Int] -> Int
 part1 [] = error "no viable sums"
-part1 (x:xs)
-  | length rsl == 0 = part1 xs
-  | otherwise = x * x'
-  where
-    rsl = filter (\(s, _) -> s == 2020) (zip (map (+x) xs) xs) 
-    ((_,x'):_) = rsl
+part1 (x:xs) =
+  case filter(\y -> x + y == 2020) xs of
+    [] -> part1 xs
+    [y] -> x * y
 
 part2 :: [Int] -> Int
 part2 [] = error "no viable sums"
