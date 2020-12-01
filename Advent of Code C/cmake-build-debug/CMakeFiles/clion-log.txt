@@ -1,0 +1,11 @@
+C:\Users\olive\AppData\Local\JetBrains\Toolbox\apps\CLion\ch-0\202.8194.17\bin\cmake\win\bin\cmake.exe -DCMAKE_BUILD_TYPE=Debug -G "CodeBlocks - NMake Makefiles" "C:\Oliver Killane's Files\B - Coding Projects\Advent Of Code 2020 - GitHub\Advent Of Code 2020\Advent-Of-Code-2020\Advent of Code C"
+-- The C compiler identification is MSVC 19.24.28314.0
+-- Check for working C compiler: C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/VC/Tools/MSVC/14.24.28314/bin/Hostx86/x86/cl.exe
+-- Check for working C compiler: C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/VC/Tools/MSVC/14.24.28314/bin/Hostx86/x86/cl.exe - works
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Configuring done
+-- Generating done
+-- Build files have been written to: C:/Oliver Killane's Files/B - Coding Projects/Advent Of Code 2020 - GitHub/Advent Of Code 2020/Advent-Of-Code-2020/Advent of Code C/cmake-build-debug

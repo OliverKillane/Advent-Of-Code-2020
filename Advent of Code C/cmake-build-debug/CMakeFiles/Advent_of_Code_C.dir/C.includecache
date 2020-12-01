@@ -1,0 +1,14 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+C:/Oliver Killane's Files/B - Coding Projects/Advent Of Code 2020 - GitHub/Advent Of Code 2020/Advent-Of-Code-2020/Advent of Code C/main.c
+stdio.h
+-
+time.h
+-
+
