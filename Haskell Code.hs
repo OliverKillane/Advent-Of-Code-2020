@@ -28,5 +28,6 @@ runDay1 = do
   print $ part1 x
   print $ part2 x
 
-
+main = do
+  runDay1
   
