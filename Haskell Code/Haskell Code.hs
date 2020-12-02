@@ -1035,7 +1035,9 @@ day2data =
   (9, 13, 'n', "nglxnhnnrktnnfznn")
   ]
 
-type Day2Check = (Int, Int, Char, String) -> Bool
+type Day2Data = (Int, Int, Char, String)
+type Day2Check = Day2Data -> Bool
+
 
 day2p1check :: Day2Check
 day2p1check (min, max, c, cs) = count <= max && count >= min
@@ -1048,7 +1050,7 @@ day2p2check (start, end, c, cs) = first /= last && (first == c || last == c)
     [first] = drop (start-1) $ take start cs
     [last] = drop (end-1) $ take end cs
 
-day2 :: Day2Check -> [(Int, Int, Char, String)] -> Int
+day2 :: Day2Check -> [Day2Data] -> Int
 day2 = (length . ) . filter
 
 runDay2 :: IO()
@@ -1056,7 +1058,7 @@ runDay2 = do
   print $ day2 day2p1check day2data
   print $ day2 day2p2check day2data
 
-
+main :: IO ()
 main = do
   runDay2
   
