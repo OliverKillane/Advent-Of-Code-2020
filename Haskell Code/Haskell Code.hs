@@ -1047,8 +1047,8 @@ day2p1check (min, max, c, cs) = count <= max && count >= min
 day2p2check :: Day2Check
 day2p2check (start, end, c, cs) = first /= last && (first == c || last == c)
   where
-    [first] = drop (start-1) $ take start cs
-    [last] = drop (end-1) $ take end cs
+    first = cs!!(start-1)
+    last = cs!!(end-1)
 
 day2 :: Day2Check -> [Day2Data] -> Int
 day2 = (length . ) . filter
