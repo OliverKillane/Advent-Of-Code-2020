@@ -32,10 +32,7 @@
     </configurations>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="a85bb916-8dcb-47d0-9d07-204b7db32193" name="Default Changelist" comment="Attempt in C.">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main.c" beforeDir="false" afterPath="$PROJECT_DIR$/main.c" afterDir="false" />
-    </list>
+    <list default="true" id="a85bb916-8dcb-47d0-9d07-204b7db32193" name="Default Changelist" comment="Added day 2" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -86,6 +83,7 @@
       <workItem from="1606854142977" duration="4631000" />
       <workItem from="1606858999563" duration="2227000" />
       <workItem from="1606941177532" duration="3909000" />
+      <workItem from="1606945142475" duration="101000" />
     </task>
     <task id="LOCAL-00001" summary="Attempt in C.">
       <created>1606857725300</created>
@@ -94,7 +92,14 @@
       <option name="project" value="LOCAL" />
       <updated>1606857725300</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="Added day 2">
+      <created>1606945159062</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1606945159062</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -114,7 +119,8 @@
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Attempt in C." />
-    <option name="LAST_COMMIT_MESSAGE" value="Attempt in C." />
+    <MESSAGE value="Added day 2" />
+    <option name="LAST_COMMIT_MESSAGE" value="Added day 2" />
   </component>
   <component name="WindowStateProjectService">
     <state width="1877" height="21" key="GridCell.Tab.0.bottom" timestamp="1606945122224">
@@ -137,6 +143,10 @@
     </state>
     <state width="1877" height="282" key="GridCell.Tab.0.right/0.0.1920.1040/1920.51.1280.984@0.0.1920.1040" timestamp="1606861247882" />
     <state width="1877" height="21" key="GridCell.Tab.0.right/0.0.1920.1040@0.0.1920.1040" timestamp="1606945122224" />
+    <state x="549" y="253" key="Vcs.Push.Dialog.v2" timestamp="1606945195831">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="549" y="253" key="Vcs.Push.Dialog.v2/0.0.1920.1040@0.0.1920.1040" timestamp="1606945195831" />
     <state x="623" y="225" width="672" height="678" key="search.everywhere.popup" timestamp="1606944808806">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
