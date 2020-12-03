@@ -1004,7 +1004,7 @@ day2data =
   (9, 13, 'n', "nglxnhnnrktnnfznn")
   ]
 
-  day3data :: [String]
+day3data :: [String]
 day3data = 
   [".#.....#..#..#....##.........#.",
   "...#...#.........#..#.#..#.....",
