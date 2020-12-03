@@ -1072,7 +1072,7 @@ day3p2 a grads = foldr (*) 1 $ map (day3p1 a) grads
 
 runDay3 ::IO()
 runDay3 = do
-  --print $ day3p1 (day3data,31,323)  (3,1)
+  print $ day3p1 (day3data,31,323)  (3,1)
   print $ day3p2 (day3data,31,323) [(1,1),(3,1),(5,1),(7,1),(1,2)]
 
 day3data :: [String]
