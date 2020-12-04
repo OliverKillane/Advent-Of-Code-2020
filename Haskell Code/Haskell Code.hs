@@ -1,4 +1,6 @@
-import AdventData ( day2data, day3data )
+import AdventData ( day2data, day3data, day4data)
+import Text.Read ( readMaybe )
+import Data.Maybe ()
 
 
 -- December 1st
@@ -60,7 +62,6 @@ runDay2 = do
 -- From a map of open spots, trees, and a slop to go down, calculate the number of trees you would hit.
 type Map = ([[Char]], Int, Int)
 
-
 day3p1 :: Map -> (Int,Int) -> Int
 day3p1 (slope, width, height) (dx,dy) = length $ filter (=='#') $ map (\a -> slope!!(a*dy)!!(a*dx `mod` width)) [0..(height `div` dy) - 1]
 
@@ -72,7 +73,68 @@ runDay3 = do
   print $ day3p1 (day3data,31,323)  (3,1)
   print $ day3p2 (day3data,31,323) [(1,1),(3,1),(5,1),(7,1),(1,2)]
 
+-- December 4th
+-- From list of passport data, check for valid passports
+type Passport = [(String, String)]
+type Day4Filter = Passport -> Bool
+
+getfields :: Passport -> [String]
+getfields [] = []
+getfields ((f,_):xs) = f:getfields xs
+
+day4p1filter :: Day4Filter
+day4p1filter pass = all (flip(elem) $ getfields pass) ["byr","iyr","eyr","hgt","hcl","ecl", "pid"]
+
+day4p2filter :: Day4Filter
+day4p2filter pass = day4p1filter pass && helper pass
+  where
+    validbyr, validiyr, valideyr, validhgt, validhcl, validecl, validpid :: String -> Bool
+    validbyr z = i <= 2002 && i >= 1920
+      where i = read z :: Int
+    validiyr z = i <= 2020 && i >= 2010
+      where i = read z :: Int
+    valideyr z 
+      = case readMaybe z :: Maybe Int of
+        Just x ->  x <= 2030 && x >= 2020
+        Nothing -> False
+    validhgt z 
+      = case take 2 $ reverse z of
+        "mc" -> case readMaybe $ take 3 z :: Maybe Int of
+                  Just x -> x >= 150 && x <= 193
+                  Nothing -> False
+        "ni" -> case readMaybe $ take 2 z :: Maybe Int of
+                  Just x -> x >= 59 && x <= 76
+                  Nothing -> False
+        _ -> False
+    validhcl ('#':z) = all (\y -> y `elem` "0123456789abcdef") z && length z == 6
+    validhcl _ = False
+    validecl = flip(elem) ["amb", "blu", "brn","gry","grn","hzl","oth"]
+    validpid z = length z == 9 && all (flip(elem) "0123456789") z
+
+    helper :: Day4Filter
+    helper [] = True
+    helper (x:xs) = rslt && helper xs
+      where 
+        rslt = 
+          case x of
+            ("byr", z) -> validbyr z
+            ("iyr", z) -> validiyr z
+            ("eyr", z) -> valideyr z
+            ("hgt", z) -> validhgt z
+            ("hcl", z) -> validhcl z
+            ("ecl", z) -> validecl z
+            ("pid", z) -> validpid z
+            ("cid", _) -> True
+            _          -> False
+
+day4 :: Day4Filter -> [Passport] -> Int
+day4 = (length.). filter
+
+runDay4 :: IO()
+runDay4 = do
+  print $ day4 day4p1filter day4data
+  print $ day4 day4p2filter day4data
+
 main :: IO ()
 main = do
-  runDay3
-  
+  runDay4
