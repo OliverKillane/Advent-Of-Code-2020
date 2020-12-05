@@ -1,6 +1,7 @@
-import AdventData ( day2data, day3data, day4data)
+import AdventData ( day2data, day3data, day4data, day5data)
 import Text.Read ( readMaybe )
 import Data.Maybe ()
+import Data.List ( intercalate )
 
 
 -- December 1st
@@ -135,6 +136,59 @@ runDay4 = do
   print $ day4 day4p1filter day4data
   print $ day4 day4p2filter day4data
 
+-- December 5th
+-- Find the seat
+
+-- Tree revision
+data SeatTree = Missing | Taken | Subtree SeatTree SeatTree
+  deriving (Show)
+
+addSeat :: SeatTree -> String -> SeatTree
+addSeat Taken _ = error "duplicate Seat"
+addSeat Missing "" = Taken
+addSeat Missing (x:xs)
+  | x == 'F' || x == 'L' = Subtree (addSeat Missing xs) Missing
+  | otherwise = Subtree Missing (addSeat Missing xs)
+addSeat (Subtree left right) (x:xs)
+  | x == 'F' || x == 'L' = Subtree (addSeat left xs) right
+  | otherwise = Subtree left (addSeat right xs)
+
+constructseats :: [String] -> SeatTree
+constructseats xs = helper Missing xs
+  where
+    helper :: SeatTree -> [String] -> SeatTree
+    helper seats [] = seats
+    helper seats (x:xs) = helper (addSeat seats x) xs
+
+-- Actual workings for day
+seatIDs :: [String] -> [Int]
+seatIDs d = map (\(row,col) -> helper 128 row * 8 + helper 8 col) $ map (splitAt 7) d
+  where
+    helper :: Int -> String -> Int
+    helper _ [x]
+      | x == 'B' || x == 'R' = 1
+      | otherwise = 0
+    helper n (x:xs)
+      | x == 'B' || x == 'R' = n' + helper n' xs
+      | otherwise = helper n' xs
+      where
+        n' = n `div` 2
+
+day5p1 :: [String] -> Int
+day5p1 = maximum . seatIDs
+
+day5p2 :: [String] -> Int
+day5p2 seats = head [id | id <- [0..1024], not (id `elem` seatnums) && ((id + 1) `elem` seatnums && (id -1) `elem` seatnums)]
+  where 
+    seatnums = seatIDs seats
+
+runDay5 :: IO()
+runDay5 = do
+  print $ day5p1 day5data
+  print $ day5p2 day5data
+
+
+
 main :: IO ()
 main = do
-  runDay4
+  runDay5
