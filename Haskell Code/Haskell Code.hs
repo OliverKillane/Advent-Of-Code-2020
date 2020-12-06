@@ -1,7 +1,7 @@
-import AdventData ( day2data, day3data, day4data, day5data)
+import AdventData ( day2data, day3data, day4data, day5data, day6data)
 import Text.Read ( readMaybe )
 import Data.Maybe ()
-import Data.List ( intercalate )
+import Data.List ( intercalate, nub, intersect )
 
 
 -- December 1st
@@ -187,8 +187,20 @@ runDay5 = do
   print $ day5p1 day5data
   print $ day5p2 day5data
 
+-- December 5th
+-- Count the number of "yes" answers to questions for each group
 
+day6p1 :: [[String]] -> Int
+day6p1 = sum . map(length . nub . concat)
+
+day6p2 :: [[String]] -> Int
+day6p2 = sum . map (length . foldr intersect ['a'..'z'])
+
+runDay6 :: IO()
+runDay6 = do
+  print $ day6p1 day6data
+  print $ day6p2 day6data
 
 main :: IO ()
 main = do
-  runDay5
+  runDay6
