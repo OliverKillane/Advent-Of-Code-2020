@@ -1,8 +1,9 @@
-import AdventData ( day2data, day3data, day4data, day5data, day6data)
+import AdventData ( day2data, day3data, day4data, day5data, day6data, day7data)
 import Text.Read ( readMaybe )
 import Data.Maybe ()
 import Data.List ( intercalate, nub, intersect )
-
+import Data.Map (Map, fromList, keys, lookup)
+import qualified Data.Map as Map
 
 -- December 1st
 -- From a list of integers, get the product of the two that sum to 2020
@@ -61,12 +62,12 @@ runDay2 = do
 
 -- December 3rd
 -- From a map of open spots, trees, and a slop to go down, calculate the number of trees you would hit.
-type Map = ([[Char]], Int, Int)
+type HillMap = ([[Char]], Int, Int)
 
-day3p1 :: Map -> (Int,Int) -> Int
+day3p1 :: HillMap -> (Int,Int) -> Int
 day3p1 (slope, width, height) (dx,dy) = length $ filter (=='#') $ map (\a -> slope!!(a*dy)!!(a*dx `mod` width)) [0..(height `div` dy) - 1]
 
-day3p2 :: Map -> [(Int,Int)] -> Int
+day3p2 :: HillMap -> [(Int,Int)] -> Int
 day3p2 a grads = foldr (*) 1 $ map (day3p1 a) grads
 
 runDay3 ::IO()
@@ -187,7 +188,7 @@ runDay5 = do
   print $ day5p1 day5data
   print $ day5p2 day5data
 
--- December 5th
+-- December 6th
 -- Count the number of "yes" answers to questions for each group
 
 day6p1 :: [[String]] -> Int
@@ -201,6 +202,35 @@ runDay6 = do
   print $ day6p1 day6data
   print $ day6p2 day6data
 
+-- December 7th
+-- Get the number of potential bags
+day7p1 :: Map String [(Int, String)] -> Int
+day7p1 bagmap = length $ filter (==True)  $ map (checkkey []) $ keys bagmap
+  where
+    checkkey :: [String] -> String -> Bool
+    checkkey visited k
+      | k `elem` visited = False
+      | "shiny gold" `elem` keys' = True
+      | otherwise = any (==True) $ map (checkkey (k:visited)) keys'
+      where
+        keys' = map (\(_, z) -> z) $ case Data.Map.lookup k bagmap of
+          Nothing -> []
+          Just xs -> xs
+
+day7p2 :: Map String [(Int, String)] -> Int
+day7p2 bagmap = getnum "shiny gold" - 1
+  where
+    getnum :: String -> Int
+    getnum k = case Data.Map.lookup k bagmap of
+        Nothing -> 0
+        Just [] -> 1
+        Just ks' -> 1 + (sum $ map (\(n, k') -> n * getnum k') ks')
+
+runDay7 :: IO()
+runDay7 = do
+  print $ day7p1 day7data
+  print $ day7p2 day7data
+
 main :: IO ()
 main = do
-  runDay6
+  runDay7
