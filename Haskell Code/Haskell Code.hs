@@ -1,4 +1,4 @@
-import AdventData ( day2data, day3data, day4data, day5data, day6data, day7data)
+import AdventData ( day2data, day3data, day4data, day5data, day6data, day7data, day8data)
 import Text.Read ( readMaybe )
 import Data.Maybe ()
 import Data.List ( intercalate, nub, intersect )
@@ -208,10 +208,10 @@ day7p1 :: Map String [(Int, String)] -> Int
 day7p1 bagmap = length $ filter (==True)  $ map (checkkey []) $ keys bagmap
   where
     checkkey :: [String] -> String -> Bool
-    checkkey visited k
-      | k `elem` visited = False
+    checkkey vstd k
+      | k `elem` vstd = False
       | "shiny gold" `elem` keys' = True
-      | otherwise = any (==True) $ map (checkkey (k:visited)) keys'
+      | otherwise = any (==True) $ map (checkkey (k:vstd)) keys'
       where
         keys' = map (\(_, z) -> z) $ case Data.Map.lookup k bagmap of
           Nothing -> []
@@ -231,6 +231,43 @@ runDay7 = do
   print $ day7p1 day7data
   print $ day7p2 day7data
 
+-- December 8th
+-- Run the assembly
+
+day8p1 :: [(String, Int)] -> Int
+day8p1 islst = runcode 0 0 []
+  where
+    runcode :: Int -> Int -> [Int] -> Int
+    runcode instr acc vstd
+      | instr `elem` vstd = acc
+      | opc == "nop" = runcode (instr+1) acc (instr:vstd)
+      | opc == "acc" = runcode (instr+1) (acc + opd) (instr:vstd)
+      | opc == "jmp" = runcode (instr + opd) acc (instr:vstd)
+      where
+        (opc, opd) = islst!!instr
+
+day8p2 :: [(String, Int)] -> Int
+day8p2 islst = runcode 0 0 [] True
+  where
+    runcode :: Int -> Int -> [Int] -> Bool -> Int
+    runcode is acc vstd s
+      | is `elem` vstd = 0
+      | is > 644 = 0
+      | is < 0 = 0
+      | is == 644 = acc
+      | opc == "jmp" = jmp
+      | opc == "nop" = nop
+      | opc == "acc" = runcode (is+1) (acc + opd) (is:vstd) s
+      where
+        (opc, opd) = islst!!is
+        jmp = runcode (is + opd) acc (is:vstd) s + if s then runcode (is+1) acc (is:vstd) False else 0
+        nop = runcode (is+1) acc (is:vstd) s + if s then runcode (is + opd) acc (is:vstd) False else 0
+
+runDay8 :: IO()
+runDay8 = do
+  print $ day8p1 day8data
+  print $ day8p2 day8data
+
 main :: IO ()
 main = do
-  runDay7
+  runDay8
