@@ -1,4 +1,12 @@
-import AdventData ( day2data, day3data, day4data, day5data, day6data, day7data, day8data)
+import AdventData ( 
+  day2data,
+  day3data,
+  day4data,
+  day5data,
+  day6data,
+  day7data,
+  day8data,
+  day9data)
 import Text.Read ( readMaybe )
 import Data.Maybe ()
 import Data.List ( intercalate, nub, intersect )
@@ -268,6 +276,62 @@ runDay8 = do
   print $ day8p1 day8data
   print $ day8p2 day8data
 
+-- December 9th
+-- Checking numbers
+
+day9p1 :: [Int] -> Int
+day9p1 nums = helper preamble pairs remainder
+  where
+    preamble  = reverse $ take 25 nums
+    remainder = drop 25 nums
+    pairs     = [x+y | x <- preamble, y<- preamble]
+
+    helper :: [Int] -> [Int] -> [Int] -> Int
+    helper lst25 lstPs (x:xs)
+      | x `elem` lstPs = helper lst25' lstPs' xs
+      | otherwise      = x
+        where
+          lst24  = take 24 lst25
+          lst25' = x:lst24
+          lstPs' = (map(+x) lst24) ++ (take 600 lstPs)
+-- answer = 731031916
+
+-- Fast algorithm, viewing it as a set of runs to sum using prefix sum O(n^2).
+day9p2 :: [Int] -> Int
+day9p2 ls@(x:xs)
+  | psm /= 0 = psm
+  | otherwise = day9p2 xs
+  where
+    prefixsum :: [Int] -> [Int] -> Int -> Int
+    prefixsum [] _ _ = 0
+    prefixsum (i:is) vs sm
+      | sm' == 731031916 = maximum vs' + minimum vs'
+      | sm' > 731031916 = 0
+      | otherwise = prefixsum is vs' sm'
+      where
+        sm' = i + sm
+        vs' = i:vs
+
+    psm = prefixsum ls [] 0
+
+-- Slow algorithm, DFS traversal of a binary tree of sublists O(2^n).
+day9p2' :: Int -> [Int] -> Int
+day9p2' _ [_] = 0
+day9p2' sm lst
+  | sm < 731031916 = 0
+  | sm == 731031916 = maximum lst + minimum lst
+  | otherwise = if lsm /= 0 then lsm else rsm
+    where
+      (l:ls) = lst
+      (r:rs) = reverse lst
+      lsm = day9p2' (sm - l) ls
+      rsm = day9p2' (sm - r) rs
+
+runDay9 :: IO()
+runDay9 = do
+  print $ day9p1 day9data
+  print $ day9p2 day9data
+
 main :: IO ()
 main = do
-  runDay8
+  runDay9
