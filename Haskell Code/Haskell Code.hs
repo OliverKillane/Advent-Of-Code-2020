@@ -357,6 +357,7 @@ day10p2 =
   . group 
   . (zipWith (-) =<< tail) 
   . sort
+  . (0:)
 
 -- Tree versions (much much slower)
 day10p1' :: [Int] -> Int
@@ -442,8 +443,8 @@ testdata =
 
 runDay10 :: IO()
 runDay10 = do
-  print $ day10p1' day10data
-  print $ day10p2' day10data
+  print $ day10p1 day10data
+  print $ day10p2 (0:day10data)
 
 main :: IO ()
 main = do
