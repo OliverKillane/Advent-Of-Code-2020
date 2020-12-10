@@ -335,6 +335,30 @@ runDay9 = do
 
 -- December 10th
 -- Checking the charger
+
+day10p1 :: [Int] -> Int
+day10p1 js = (occur 3 ds +1) * (occur 1 ds +1)
+  where
+    fs = sort js
+    ds = zipWith (-) (tail fs) fs
+
+    occur :: Int -> [Int] -> Int
+    occur = ((length .). filter) . (==)
+
+fib3 :: [Integer]
+fib3 = 1 : 1 : 2 : [fib3!!n + fib3!!(n+1) + fib3!!(n+2) | n <- [0..]]
+
+--issue not working properly
+day10p2 :: [Int] -> Integer
+day10p2 = 
+  product 
+  . map ((fib3 !!) . length) 
+  . filter (1 `elem`)
+  . group 
+  . (zipWith (-) =<< tail) 
+  . sort
+
+-- Tree versions (much much slower)
 day10p1' :: [Int] -> Int
 day10p1' jlst= traverse 0 (0,0)
   where
@@ -348,17 +372,8 @@ day10p1' jlst= traverse 0 (0,0)
         where
           nxt = minimum $ filter (>c) jlst
 
-day10p1 :: [Int] -> Int
-day10p1 js = (occur 3 ds +1) * (occur 1 ds +1)
-  where
-    fs = sort js
-    ds = zipWith (-) (tail fs) fs
-
-    occur :: Int -> [Int] -> Int
-    occur = ((length .). filter) . (==)
-
-day10p2 :: [Int] -> Int
-day10p2 js = traverse 0 fs
+day10p2' :: [Int] -> Int
+day10p2' js = traverse 0 fs
   where
     fs = sort js
     dvc = last fs
@@ -375,17 +390,6 @@ day10p2 js = traverse 0 fs
       | x <= p = (x,xs) : getsubs p xs
       | otherwise = []
 
-fib3 :: [Integer]
-fib3 = 1 : 1 : 2 : [fib3!!n + fib3!!(n+1) + fib3!!(n+2) | n <- [0..]]
-
-day10p2' :: [Int] -> Integer
-day10p2' = 
-  product 
-  . map ((fib3 !!) . length) 
-  . filter (1 `elem`)
-  . group 
-  . (zipWith (-) =<< tail) 
-  . sort
       
 testdata2 :: [Int]
 testdata2 = 
@@ -438,7 +442,7 @@ testdata =
 
 runDay10 :: IO()
 runDay10 = do
-  -- print $ day10p1' day10data
+  print $ day10p1' day10data
   print $ day10p2' day10data
 
 main :: IO ()
