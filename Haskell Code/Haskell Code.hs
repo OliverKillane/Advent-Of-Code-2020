@@ -7,10 +7,11 @@ import AdventData (
   day6data,
   day7data,
   day8data,
-  day9data)
+  day9data,
+  day10data)
 import Text.Read ( readMaybe )
 import Data.Maybe ()
-import Data.List ( intercalate, nub, intersect )
+import Data.List (group, groupBy, sort,  intercalate, nub, intersect )
 import Data.Map (Map, fromList, keys, lookup)
 import qualified Data.Map as Map
 
@@ -41,8 +42,8 @@ day1p2 (x:xs) =
 
 runDay1 :: IO()
 runDay1 = do
-  print $ day1p1 day1Data
-  print $ day1p2 day1Data
+  print $ day1p1 day1data
+  print $ day1p2 day1data
 
 -- December 2nd
 -- From a list of policies, and passwords, determine how many allowed passwords exist.
@@ -332,6 +333,114 @@ runDay9 = do
   print $ day9p1 day9data
   print $ day9p2 day9data
 
+-- December 10th
+-- Checking the charger
+day10p1' :: [Int] -> Int
+day10p1' jlst= traverse 0 (0,0)
+  where
+    dvc = maximum jlst
+    traverse :: Int -> (Int, Int) -> Int
+    traverse c (three, one)
+      | c == dvc = (three+1) * one
+      | nxt - c == 3 = traverse nxt (three + 1, one)
+      | nxt - c == 1 = traverse nxt (three, one + 1)
+      | otherwise = traverse nxt (three, one)
+        where
+          nxt = minimum $ filter (>c) jlst
+
+day10p1 :: [Int] -> Int
+day10p1 js = (occur 3 ds +1) * (occur 1 ds +1)
+  where
+    fs = sort js
+    ds = zipWith (-) (tail fs) fs
+
+    occur :: Int -> [Int] -> Int
+    occur = ((length .). filter) . (==)
+
+day10p2 :: [Int] -> Int
+day10p2 js = traverse 0 fs
+  where
+    fs = sort js
+    dvc = last fs
+
+    traverse :: Int -> [Int] -> Int
+    traverse c []
+      | c == dvc = 1
+      | otherwise = 0
+    traverse c xs = sum $ map (\(o,os) -> traverse o os) $ getsubs (c+3) xs
+
+    getsubs :: Int -> [Int] -> [(Int, [Int])]
+    getsubs _ [] = []
+    getsubs p (x:xs)
+      | x <= p = (x,xs) : getsubs p xs
+      | otherwise = []
+
+fib3 :: [Integer]
+fib3 = 1 : 1 : 2 : [fib3!!n + fib3!!(n+1) + fib3!!(n+2) | n <- [0..]]
+
+day10p2' :: [Int] -> Integer
+day10p2' = 
+  product 
+  . map ((fib3 !!) . length) 
+  . filter (1 `elem`)
+  . group 
+  . (zipWith (-) =<< tail) 
+  . sort
+      
+testdata2 :: [Int]
+testdata2 = 
+  [16,
+  10,
+  15,
+  5,
+  1,
+  11,
+  7,
+  19,
+  6,
+  12,
+  4]
+
+
+testdata :: [Int]
+testdata = 
+  [28,
+  33,
+  18,
+  42,
+  31,
+  14,
+  46,
+  20,
+  48,
+  47,
+  24,
+  23,
+  49,
+  45,
+  19,
+  38,
+  39,
+  11,
+  1,
+  32,
+  25,
+  35,
+  8,
+  17,
+  7,
+  9,
+  4,
+  2,
+  34,
+  10,
+  3]
+
+runDay10 :: IO()
+runDay10 = do
+  -- print $ day10p1' day10data
+  print $ day10p2' day10data
+
 main :: IO ()
 main = do
-  runDay9
+  runDay10
