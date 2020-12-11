@@ -8,11 +8,12 @@ import AdventData (
   day7data,
   day8data,
   day9data,
-  day10data)
+  day10data,
+  day11data)
 import Text.Read ( readMaybe )
-import Data.Maybe ()
-import Data.List (group, groupBy, sort,  intercalate, nub, intersect )
-import Data.Map (Map, fromList, keys, lookup)
+import Data.Maybe (fromJust)
+import Data.List (intersperse, group, groupBy, sort,  intercalate, nub, intersect )
+import qualified Data.Map (adjust, Map, fromList, keys, lookup, filter)
 import qualified Data.Map as Map
 
 -- December 1st
@@ -213,8 +214,8 @@ runDay6 = do
 
 -- December 7th
 -- Get the number of potential bags
-day7p1 :: Map String [(Int, String)] -> Int
-day7p1 bagmap = length $ filter (==True)  $ map (checkkey []) $ keys bagmap
+day7p1 :: Map.Map String [(Int, String)] -> Int
+day7p1 bagmap = length $ filter (==True)  $ map (checkkey []) $ Map.keys bagmap
   where
     checkkey :: [String] -> String -> Bool
     checkkey vstd k
@@ -226,7 +227,7 @@ day7p1 bagmap = length $ filter (==True)  $ map (checkkey []) $ keys bagmap
           Nothing -> []
           Just xs -> xs
 
-day7p2 :: Map String [(Int, String)] -> Int
+day7p2 :: Map.Map String [(Int, String)] -> Int
 day7p2 bagmap = getnum "shiny gold" - 1
   where
     getnum :: String -> Int
@@ -348,7 +349,6 @@ day10p1 js = (occur 3 ds +1) * (occur 1 ds +1)
 fib3 :: [Integer]
 fib3 = 1 : 1 : 2 : [fib3!!n + fib3!!(n+1) + fib3!!(n+2) | n <- [0..]]
 
---issue not working properly
 day10p2 :: [Int] -> Integer
 day10p2 = 
   product 
@@ -391,61 +391,83 @@ day10p2' js = traverse 0 fs
       | x <= p = (x,xs) : getsubs p xs
       | otherwise = []
 
-      
-testdata2 :: [Int]
-testdata2 = 
-  [16,
-  10,
-  15,
-  5,
-  1,
-  11,
-  7,
-  19,
-  6,
-  12,
-  4]
-
-
-testdata :: [Int]
-testdata = 
-  [28,
-  33,
-  18,
-  42,
-  31,
-  14,
-  46,
-  20,
-  48,
-  47,
-  24,
-  23,
-  49,
-  45,
-  19,
-  38,
-  39,
-  11,
-  1,
-  32,
-  25,
-  35,
-  8,
-  17,
-  7,
-  9,
-  4,
-  2,
-  34,
-  10,
-  3]
-
 runDay10 :: IO()
 runDay10 = do
   print $ day10p1 day10data
   print $ day10p2 (0:day10data)
 
+
+-- December 11th
+-- Cellular Automata
+
+type Key = (Int, Int)
+type Val = Char
+type Board = Map.Map Key Val
+type Stepper = Board -> Key -> Val -> Val
+
+rows, columns :: Int
+rows = 98
+columns = 89
+
+printboard :: Board -> IO()
+printboard b = 
+  putStrLn 
+  $ concat 
+  $ intersperse "\n" 
+  $ map (map (b Map.!)) 
+  $ groupBy (\(r,_) (r',_) -> r == r') 
+  $ sort 
+  $ Map.keys b
+
+genb :: [[Char]] -> Board
+genb grid 
+  = Map.fromList [((r,c), grid!!r!!c) | r <- [0..length grid - 1], c <- [0..length (grid!!0) -1]]
+
+stepb :: Board -> Stepper -> Board
+stepb b f 
+  = Map.mapWithKey (f b) b
+
+occup :: Stepper -> Board -> Int
+occup f b
+  | b == b' = (length $ filter (=='#') $ map (b Map.!) $ Map.keys b)
+  | otherwise  = occup f b'
+  where
+    b' = stepb b f
+
+day11p1 :: Stepper
+day11p1 b (r,c) v
+  | v == 'L' && '#' `notElem` advs                  = '#'
+  | v == '#' && (length $ filter (=='#') advs) >= 4 = 'L'
+  | otherwise                                       = v
+  where
+    advs = 
+      map (b Map.!) 
+      $ filter (\(r',c') -> (r' >= 0 && r'<= rows) && (c' >= 0 && c'<= columns)) 
+      [(r-1,c),(r-1,c+1),(r,c+1),(r+1,c+1),(r+1,c),(r+1,c-1),(r,c-1),(r-1,c-1)]
+
+day11p2 :: Stepper
+day11p2 b (r,c) v
+  | v == 'L' && seen == 0 = '#'
+  | v == '#' && seen >= 5 = 'L'
+  | otherwise             = v
+  where
+    seen = length . filter (==True) $ map (getline (r,c)) [(0,1),(1,1),(1,0),(1,-1),(0,-1),(-1,-1),(-1,0),(-1,1)]
+    getline :: (Int,Int) -> (Int,Int) -> Bool
+    getline (lr,lc) d@(dr,dc)
+      | (0 > r' || r' > rows)    = False
+      | (0 > c' || c' > columns) = False
+      | b Map.! p' == '#'        = True
+      | b Map.! p' == 'L'        = False
+      | otherwise                = getline p' d
+      where
+        p'@(r',c') = (lr+dr,lc+dc)
+
+runDay11 :: IO()
+runDay11 = do
+  print $ occup (day11p1) (genb day11data)
+  print $ occup (day11p2) (genb day11data)
+
+
 main :: IO ()
 main = do
-  runDay10
+  runDay11
