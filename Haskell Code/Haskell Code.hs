@@ -9,7 +9,8 @@ import AdventData (
   day8data,
   day9data,
   day10data,
-  day11data)
+  day11data,
+  day12data)
 import Text.Read ( readMaybe )
 import Data.Maybe (fromJust)
 import Data.List (intersperse, group, groupBy, sort,  intercalate, nub, intersect )
@@ -467,6 +468,60 @@ runDay11 = do
   print $ occup (day11p1) (genb day11data)
   print $ occup (day11p2) (genb day11data)
 
+-- December 12th
+-- Navigation by simple instructions.
+
+
+-- Take east facing direction as 90:
+-- N -> 0, E -> 90, S -> 180, W -> 270
+day12p1 :: [(Char,Int)] -> Int
+day12p1 ms = abs dx + abs dy
+  where
+    (dx,dy) = nav ms 90 (0,0)
+    nav :: [(Char,Int)] -> Int -> (Int,Int) -> (Int,Int)
+    nav [] _ p = p
+    nav (m:ms) d p@(x,y) 
+      = case m of
+        ('N', v) -> nav ms d (x,y+v)
+        ('S', v) -> nav ms d (x,y-v)
+        ('E', v) -> nav ms d (x+v,y)
+        ('W', v) -> nav ms d (x-v,y)
+        ('L', v) -> nav ms ((d - v) `mod` 360) p
+        ('R', v) -> nav ms ((d + v) `mod` 360) p
+        ('F', v) -> 
+          case d of
+            0 -> nav ms d (x,y+v)
+            90 -> nav ms d (x+v,y)
+            180 -> nav ms d (x,y-v)
+            270 -> nav ms d (x-v,y)
+
+day12p2 :: [(Char,Int)] -> Int
+day12p2 ms = abs dx + abs dy
+  where
+    (dx,dy) = nav ms  (10,1) (0,0)
+    nav :: [(Char,Int)] -> (Int,Int) -> (Int,Int) -> (Int,Int)
+    nav [] _ s = s
+    nav (m:ms) p@(px,py) s@(sx,sy)
+      = case m of
+        ('N', v) -> nav ms (px,py+v) s
+        ('S', v) -> nav ms (px,py-v) s
+        ('E', v) -> nav ms (px+v,py) s
+        ('W', v) -> nav ms (px-v,py) s
+        ('F', v) -> nav ms p (sx + v*px, sy + v*py)
+        ('L', 90) -> nav ms (-py,px) s
+        ('L', 270) -> nav ms (py,-px) s
+        ('R', 90) ->  nav ms (py,-px) s
+        ('R', 270) -> nav ms (-py,px) s
+        (_, 180) -> nav ms (-px,-py) s
+
+
+testdata :: [(Char,Int)]
+testdata = 
+  [('F',10),
+  ('N',3),
+  ('F',7),
+  ('R',90),
+  ('F',11)]
 
 main :: IO ()
 main = do
