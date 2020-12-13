@@ -10,10 +10,11 @@ import AdventData (
   day9data,
   day10data,
   day11data,
-  day12data)
+  day12data,
+  day13data)
 import Text.Read ( readMaybe )
 import Data.Maybe (fromJust)
-import Data.List (intersperse, group, groupBy, sort,  intercalate, nub, intersect )
+import Data.List (foldl', intersperse, group, groupBy, sort,  intercalate, nub, intersect )
 import qualified Data.Map (adjust, Map, fromList, keys, lookup, filter)
 import qualified Data.Map as Map
 
@@ -515,14 +516,55 @@ day12p2 ms = abs dx + abs dy
         (_, 180) -> nav ms (-px,-py) s
 
 
-testdata :: [(Char,Int)]
-testdata = 
+testdata12 :: [(Char,Int)]
+testdata12 = 
   [('F',10),
   ('N',3),
   ('F',7),
   ('R',90),
   ('F',11)]
 
+-- December 13th
+-- Taking the bus
+
+day13p1 :: (Int, [String]) -> Int
+day13p1 (start, buses) = wait * bus
+  where
+    bvals = map (\x -> read x :: Int) $ filter(/="x") buses
+    (wait, bus) = minimum $ zip (map (\x -> x - (snd $ quotRem start x)) bvals) bvals
+
+test :: (Integer, Integer) -> (Integer, Integer) -> (Integer, Integer)
+test (os, mb) (ind, tgt) = check 0
+  where
+    check :: Integer -> (Integer, Integer)
+    check i
+      | c `mod` tgt == 0 = (c, mb * tgt)
+      | otherwise        = check $ i + 1 
+        where
+          c = os + i * mb + ind
+
+developlist :: [String] -> [(Integer, Integer)]
+developlist [] = []
+developlist bs = (toInteger (length xs) + 1, read n :: Integer):developlist ns
+  where
+    xs = takeWhile (=="x") bs
+    (n:ns) = dropWhile  (=="x") bs
+
+day13p2 :: (Int, [String]) -> Integer
+day13p2 (_,b) = fst (foldl test (0,s) ns) - toInteger(length b- 1)
+  where
+    ((_,s):ns) = developlist b
+
+runDay13 :: IO()
+runDay13 = do
+  print $ day13p1 day13data
+  print $ day13p2 day13data
+
+testdata13 :: (Int, [String])
+testdata13 = 
+  (939,
+  ["7","13","x","x","59","x","31","19"])
+
 main :: IO ()
 main = do
-  runDay11
+  runDay13
