@@ -1,22 +1,11 @@
-import AdventData ( 
-  day1data,
-  day2data,
-  day3data,
-  day4data,
-  day5data,
-  day6data,
-  day7data,
-  day8data,
-  day9data,
-  day10data,
-  day11data,
-  day12data,
-  day13data)
+
+import AdventData
 import Text.Read ( readMaybe )
 import Data.Maybe (fromJust)
 import Data.List (foldl', intersperse, group, groupBy, sort,  intercalate, nub, intersect )
 import qualified Data.Map (adjust, Map, fromList, keys, lookup, filter)
 import qualified Data.Map as Map
+import Data.Bits
 
 -- December 1st
 -- From a list of integers, get the product of the two that sum to 2020
@@ -565,6 +554,87 @@ testdata13 =
   (939,
   ["7","13","x","x","59","x","31","19"])
 
+--december 14th
+-- bit masks
+day14p1 :: [BitStruction] -> Int
+day14p1 j = (sum.map snd) rslt
+  where
+    (rslt, _, _) = foldl' run ([],[],[]) j
+
+    run :: ([(Int,Int)], [Int], [Int]) -> BitStruction -> ([(Int,Int)], [Int], [Int])
+    run (v, _, _) (Mask m ) = (v, ones, zeros)
+      where
+        m' = reverse m
+        ones = map snd (filter ((=='1').fst) $ zip m' [0..])
+        zeros = map snd (filter ((=='0').fst) $ zip m' [0..])
+
+    run (v, os, zs) (Load ads val) = (insert (ads,v') v, os, zs )
+      where
+        v' = foldl clearBit (foldl setBit val os) zs
+    
+    insert :: (Int,Int) -> [(Int,Int)] -> [(Int,Int)]
+    insert v@(ads, _) vs = v:filter((/=ads).fst) vs
+
+day14p2 :: [BitStruction] -> Int
+day14p2 is = Map.foldr (+) 0 $ snd $ foldl' next ("",Map.fromList []) is
+  where
+    next :: (String, Map.Map Int Int) -> BitStruction -> (String, Map.Map Int Int)
+    next (_, mp) (Mask m') = (m', mp)
+    next (m, mp) (Load ad val) = (m, foldl' (\m k -> Map.insert k val m) mp (genads m ad))
+    
+    genads :: String -> Int -> [Int]
+    genads m ad = ad''
+      where
+        m' = reverse m
+        ones = map snd (filter ((=='1').fst) $ zip m' [0..])
+        misses = map snd (filter ((=='X').fst) $ zip m' [0..])
+        ad' = foldl' setBit ad ones
+        ad'' = foldl' (\ads' b -> map (`setBit` b) ads' ++ map (`clearBit` b) ads') [ad'] misses
+
+-- Broekn version (non functional)
+day14p2' :: [BitStruction] -> Int
+day14p2' is = sum $ map (\(x,y) -> 2^((length.filter (=='X')) x) * y) fin
+  where 
+    cd = compile is ""
+    fin = foldl' filterins [] cd
+
+filterins :: [(String, Int)] -> (String, Int) -> [(String, Int)]
+filterins ls e@(ads,_)
+  = e:filter (\(ads',_) -> elem False (zipWith (\x y -> case x of 'X' -> True;_ -> x == y) ads ads')) ls
+
+compile :: [BitStruction] -> String -> [(String, Int)]
+compile [] _ = []
+compile ((Mask m):is) _ = compile is m
+compile ((Load ads val):is) m 
+  = (zipWith (\x y -> case x of '0' -> y;'1' -> '1';'X' -> 'X') m (showBitVector ads masklen), val) : compile is m
+
+runDay14 :: IO()
+runDay14 = do
+  print $ day14p1 day14data  
+  print $ day14p2 day14data  
+
+-- showBitVector aken for mock test spec
+showBitVector :: Int -> Int -> String
+showBitVector _ 0 = ""
+showBitVector bv n = showBitVector (bv `div` 2) (n - 1) ++ show (bv `mod` 2)
+
+masklen :: Int
+masklen = 36
+
+testdata14 :: [BitStruction]
+testdata14 = 
+  [Mask "XXXXXXXXXXXXXXXXXXXXXXXXXXXXX1XXXX0X",
+  Load 8 11,
+  Load 7 101,
+  Load 8 0]
+
+testdata14' :: [BitStruction]
+testdata14' = 
+  [Mask "000000000000000000000000000000X1001X",
+  Load 42 100,
+  Mask "00000000000000000000000000000000X0XX",
+  Load 26 1]
+
 main :: IO ()
 main = do
-  runDay13
+  runDay14
