@@ -635,6 +635,25 @@ testdata14' =
   Mask "00000000000000000000000000000000X0XX",
   Load 26 1]
 
+
+-- December 15th
+-- Elf number game
+day15 :: Int -> [Int] -> Int
+day15 n ls = game (length ls) (last ls) (Map.fromList $ zip ls [1..])
+  where
+    game :: Int -> Int -> Map.Map Int Int -> Int
+    game ps pv mp
+      | ps == n = pv
+      | otherwise 
+          = case Map.lookup pv mp of
+            Just s -> game (ps+1) (ps-s) (Map.insert pv ps mp)
+            Nothing -> game (ps+1) 0 (Map.insert pv ps mp)
+
+runDay15 :: IO()
+runDay15 = do
+  print $ day15 2020 day15data
+  print $ day15 30000000 day15data
+
 main :: IO ()
 main = do
   runDay14
